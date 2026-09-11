@@ -547,7 +547,6 @@
 
 .sweet svg {
   overflow: visible;
-  filter: saturate(1.15);
 }
 
 .logo-3d {
@@ -727,6 +726,11 @@
 
   .hero-image-small {
     animation-duration: 10s;
+  }
+
+  .animate-glow-pulse {
+    animation: none;
+    opacity: 0.4;
   }
 
   .reveal[data-reveal="left"],

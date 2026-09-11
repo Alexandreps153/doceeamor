@@ -36,16 +36,33 @@ export function Hero() {
     if (!video) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return;
+        if (
+          reduceMotion.matches ||
+          document.visibilityState !== "visible" ||
+          !entry.isIntersecting
+        ) {
+          video.pause();
+          return;
+        }
+        void video.play().catch(() => undefined);
+      },
+      { threshold: 0.1 },
+    );
     const syncPlayback = () => {
-      if (reduceMotion.matches) {
-        video.pause();
-        return;
-      }
-      void video.play().catch(() => undefined);
+      if (reduceMotion.matches) video.pause();
+      else if (document.visibilityState === "visible") void video.play().catch(() => undefined);
     };
-    syncPlayback();
+    visibilityObserver.observe(video);
     reduceMotion.addEventListener("change", syncPlayback);
-    return () => reduceMotion.removeEventListener("change", syncPlayback);
+    document.addEventListener("visibilitychange", syncPlayback);
+    return () => {
+      visibilityObserver.disconnect();
+      reduceMotion.removeEventListener("change", syncPlayback);
+      document.removeEventListener("visibilitychange", syncPlayback);
+    };
   }, []);
 
   return (

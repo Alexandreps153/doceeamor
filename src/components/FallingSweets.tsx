@@ -245,7 +245,9 @@ export function FallingSweets() {
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const compactLayout = window.matchMedia("(max-width: 640px)").matches;
-    setSweets(buildSweets(reducedMotion ? 0 : compactLayout ? 6 : 10));
+    const modestDevice = navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4;
+    const sweetCount = reducedMotion ? 0 : compactLayout ? 4 : modestDevice ? 6 : 10;
+    setSweets(buildSweets(sweetCount));
   }, []);
 
   return (
